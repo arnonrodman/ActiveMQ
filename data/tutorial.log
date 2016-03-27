@@ -1,0 +1,24 @@
+/*C2*/SET SCHEMA PUBLIC
+CONNECT USER SA
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE
+alter table STUDENT drop constraint FK6k4bkbnp3ik3pp9t5suo8d4eb
+drop table STUDENT if exists
+drop table STUDENT_ADDRESS if exists
+drop table STUDENT_DETAIL if exists
+drop sequence hibernate_sequence
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE
+create sequence hibernate_sequence start with 1 increment by 1
+create table STUDENT (studentId integer not null, birthDate date, name varchar(255), studentAddress_addresId integer, primary key (studentId))
+create table STUDENT_ADDRESS (addresId integer not null, addressDetails varchar(255), primary key (addresId))
+create table STUDENT_DETAIL (studentId integer not null, STUDENT_MOBIL_NUMBER varchar(255), primary key (studentId))
+alter table STUDENT add constraint FK6k4bkbnp3ik3pp9t5suo8d4eb foreign key (studentAddress_addresId) references STUDENT_ADDRESS
+SET AUTOCOMMIT FALSE
+SET AUTOCOMMIT TRUE

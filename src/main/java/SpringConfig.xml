@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"             
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	        http://www.springframework.org/schema/beans/spring-beans.xsd	        	        
+	        http://activemq.apache.org/schema/core
+	        http://activemq.apache.org/schema/core/activemq-core.xsd
+	        http://www.springframework.org/schema/context
+	        http://www.springframework.org/schema/context/spring-context.xsd
+	        http://www.springframework.org/schema/task
+       		http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+	               
+		
+		<bean id="restaruantBean" class="com.springTest.springTest.Restaruant"
+			init-method="init" destroy-method="destroy">
+			<property name="welcomNote" value="${welcomNote}" />
+		</bean>
+        
+        <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        	<property name="locations">
+        		<value>
+        			classpath:MySpring.properties
+        		</value>
+        	</property>
+	    </bean>	
+	   	
+	   
+	   <!-- enable spring @Schedul service  -->	
+	   	<task:annotation-driven executor="filesAcceptorExecutor" scheduler="filesAcceptorScheduler"/>
+    	<task:executor id="filesAcceptorExecutor" pool-size="3"/>
+    	<task:scheduler id="filesAcceptorScheduler" pool-size="4"/>
+    	 	    	
+	    <bean id="FileReader" class="com.activeMQ.FileReader" >
+	    	<property name="jmsTemplate" ref="jmsTemplate"></property>
+	    	<property name="destination" ref="destination"></property>
+	    </bean>
+	    
+	    <bean id="Worker" class="com.activeMQ.Worker">
+	    	<property name="jmsTemplate" ref="jmsTemplate"></property>
+	    	<property name="destination" ref="destination"></property>
+	    </bean>     
+	    
+	    <!-- JMS ActiveMQ -->
+		<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+			<property name="brokerURL">
+				<!-- value>tcp://localhost:61616</value -->
+				<value>vm://mySqlBroker</value>
+			</property>				
+		</bean>
+	
+		<bean id="pooledJmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+			<property name="connectionFactory" ref="jmsConnectionFactory" />
+		</bean>
+	
+		<bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
+			<constructor-arg value="jmsExample" />
+		</bean>		
+		
+		<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+			<property name="connectionFactory" ref="pooledJmsConnectionFactory" />
+			<property name="deliveryPersistent" value="true"/>
+			<property name="deliveryMode" value="2"/>				
+		</bean>
+		
+		<bean id="mysql-ds" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+			<property name="url" value="jdbc:mysql://10.216.6.10:3306/activemq?relaxAutoCommit=true" />
+			<property name="username" value="root" />
+			<property name="password" value="123456" />
+			<property name="poolPreparedStatements" value="true" />
+		</bean>
+    
+	<broker xmlns="http://activemq.apache.org/schema/core" brokerName="mySqlBroker" useJmx="true" persistent="true" >
+		<persistenceAdapter>
+			<jdbcPersistenceAdapter dataSource="#mysql-ds"/>
+		</persistenceAdapter>
+	</broker>	 
+</beans>
