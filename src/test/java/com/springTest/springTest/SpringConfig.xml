@@ -14,8 +14,7 @@
 	        http://www.springframework.org/schema/context
 	        http://www.springframework.org/schema/context/spring-context.xsd
 	        http://www.springframework.org/schema/task
-       		http://www.springframework.org/schema/task/spring-task-3.0.xsd
-       		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
+       		http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 	               
 		
 		<bean id="restaruantBean" class="com.springTest.springTest.Restaruant"
@@ -34,21 +33,20 @@
 	   
 	   <!-- enable spring @Schedul service  -->	
 	   	<task:annotation-driven executor="filesAcceptorExecutor" scheduler="filesAcceptorScheduler"/>
-    	<task:executor id="filesAcceptorExecutor" pool-size="3"/>
-    	<task:scheduler id="filesAcceptorScheduler" pool-size="6"/>
-    	  	 
-    	 	    	
-	    <bean id="FileReader" class="com.activeMQ.FileReader">
-	    	<property name="jmsTemplate" ref="jmsTemplate"/>
-	    	<property name="destination" ref="destination"/>
+    	<task:executor id="filesAcceptorExecutor" pool-size="10"/>
+    	<task:scheduler id="filesAcceptorScheduler" pool-size="10"/>
+    	
+    	  	    	
+	    <bean id="FileReader" class="com.activeMQ.FileReader" >
+	    	<property name="jmsTemplate" ref="jmsTemplate"></property>
+	    	<property name="destination" ref="destination"></property>
 	    </bean>
-	   
 	    
-	    <bean id="Worker" class="com.activeMQ.Worker" >
-	    	<property name="jmsTemplate" ref="jmsTemplate"/>
-	    	<property name="destination" ref="destination"/>
-		</bean>
-		    
+	    <bean id="Worker" class="com.activeMQ.Worker">
+	    	<property name="jmsTemplate" ref="jmsTemplate"></property>
+	    	<property name="destination" ref="destination"></property>
+	    </bean>	        
+	    
 	    <!-- JMS ActiveMQ -->
 		<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 			<property name="brokerURL">
@@ -70,7 +68,6 @@
 			<property name="connectionFactory" ref="pooledJmsConnectionFactory" />
 			<property name="deliveryPersistent" value="true"/>
 			<!-- property name="deliveryMode" value="1"/-->
-			 <property name="receiveTimeout" value="4" />
 			<property name="sessionTransacted" value="true"/>
    			<property name="sessionAcknowledgeMode" value="2" />   			
 		</bean>
